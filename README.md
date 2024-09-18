@@ -10,7 +10,7 @@
 11. Скачайте файл https://github.com/sayapinpavel/rpi/blob/main/ov5647.c и поместите его в директорию drivers/media/i2c/
 12. Запустите повторно make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- Image modules dtbs; В директории drivers/media/i2c/ у вас появится модуль ядра ov5647.ko переместите его в домашнию директорию на rpi
 13. Удалите драйвер на rpi: sudo rm /usr/lib/modules/6.6.51-v8+/kernel/drivers/media/i2c/ov5647.ko.xz
-14. Скачайте скрипт https://github.com/sayapinpavel/rpi/blob/main/get_img.sh и подожите его на rpi в домашнию директорию
+14. Скачайте скрипт https://github.com/sayapinpavel/rpi/blob/main/get_img.sh и подожите его на rpi в домашнию директорию. Сделайте скрипт исполняемым: chmod +x get_img.sh
 15. Скачайте файл https://github.com/sayapinpavel/rpi/blob/main/config.txt и положите его на rpi в директорию /boot/firmware/  После чего перезагрузите rpi
-16. Проинициализируйте драйвер который в скинули на rpi: insmod ov5647.ko 
-17. Чтобы получить картинку запустите скрипт: get_img.sh   
+16. Проинициализируйте драйвер который вы скинули на rpi: insmod ov5647.ko 
+17. Чтобы получить картинку запустите скрипт: ./get_img.sh   
