@@ -10,3 +10,4 @@
 11. Скачайте файл https://github.com/sayapinpavel/rpi/blob/main/ov5647.c и поместите его в директорию drivers/media/i2c/
 12. Запустите повторно make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- Image modules dtbs
 13. Скачайте файл https://github.com/sayapinpavel/rpi/blob/main/config.txt и положите его на rpi в директорию /boot/firmware/  После чего перезагрузите rpi
+14. Получить картинку: media-ctl  -v -d /dev/media2 -V ''\''ov5647 10-0036'\'':0 [fmt:Y8_1X8/640x480]'; v4l2-ctl --device /dev/video0 --set-fmt-video=width=640,height=480,pixelformat=GREY; v4l2-ctl --device /dev/video0 --stream-mmap --stream-to=frame.raw --stream-count=1
