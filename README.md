@@ -5,5 +5,6 @@
 5. Запустите команду sudo rpi-update 
 7. Скачайте утилиту rpi-source, запустив на rpi: sudo wget https://raw.githubusercontent.com/RPi-Distro/rpi-source/master/rpi-source -O /usr/local/bin/rpi-source && sudo chmod +x /usr/local/bin/rpi-source && /usr/local/bin/rpi-source -q --tag-update
 8. Запустите на rpi : sudo rpi-source так вы получите исходники ядра в tar.gz архиве. Скопируйте исходники ядра себе на хост и распакуйте.
-9. Запустите: make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- bcm2711_defconfig 
-10. Запустите: make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- Image modules dtbs
+9. Запустите на хосте: make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- bcm2711_defconfig 
+10. Запустите на хосте: make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- Image modules dtbs
+11. Скачайте файл 
