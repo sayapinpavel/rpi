@@ -9,4 +9,4 @@
 10. Запустите на хосте: make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- Image modules dtbs
 11. Скачайте файл https://github.com/sayapinpavel/rpi/blob/main/ov5647.c и поместите его в директорию drivers/media/i2c/
 12. Запустите повторно make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- Image modules dtbs
-13. Скачайте файл
+13. Скачайте файл https://github.com/sayapinpavel/rpi/blob/main/config.txt и положите его на rpi в директорию /boot/firmware/  После чего перезагрузите rpi
