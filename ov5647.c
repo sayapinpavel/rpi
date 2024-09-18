@@ -686,14 +686,6 @@ static int ov5647_stream_on(struct v4l2_subdev *sd)
 	u8 val = MIPI_CTRL00_BUS_IDLE;
 	int ret;
 
-	printk("ov5647_stream_on 111111\n");
-
-	//ret = ov5647_set_mode(sd);
-	//if (ret) {
-	//	dev_err(&client->dev, "Failed to program sensor mode: %d\n", ret);
-	//	return ret;
-	//}
-
 	/* Apply customized values from user when stream starts. */
 	ret =  __v4l2_ctrl_handler_setup(sd->ctrl_handler);
 	if (ret)
@@ -703,15 +695,6 @@ static int ov5647_stream_on(struct v4l2_subdev *sd)
 		val |= MIPI_CTRL00_CLOCK_LANE_GATE |
 		       MIPI_CTRL00_LINE_SYNC_ENABLE;
 
-//	ret = ov5647_write(sd, OV5647_REG_MIPI_CTRL00, val);
-//	if (ret < 0)
-//		return ret;
-
-//	ret = ov5647_write(sd, OV5647_REG_FRAME_OFF_NUMBER, 0x00);
-//	if (ret < 0)
-//		return ret;
-
-//	return ov5647_write(sd, OV5640_REG_PAD_OUT, 0x00);
 	return 0;
 }
 
@@ -737,41 +720,30 @@ static int ov5647_power_on(struct device *dev)
 	struct ov5647 *sensor = dev_get_drvdata(dev);
 	int ret;
 
-	printk("aaaaaaaaaaaaaaaaaaa \n ");
-	dev_dbg(dev, "OV5647 power on\n");
-
-printk("aaaaaaaaaaaaaaaaaaa1111 \n ");
 	ret = regulator_bulk_enable(OV5647_NUM_SUPPLIES, sensor->supplies);
 	if (ret < 0) {
 		dev_err(dev, "Failed to enable regulators\n");
 		return ret;
 	}
-printk("aaaaaaaaaaaaaaaaaaa22222 \n ");
+
 	if (sensor->pwdn) {
 		gpiod_set_value_cansleep(sensor->pwdn, 0);
 		msleep(PWDN_ACTIVE_DELAY_MS);
 	}
-printk("aaaaaaaaaaaaaaaaaaa33333 \n ");
-//	ret = clk_prepare_enable(sensor->xclk);
-//	if (ret < 0) {
-//		dev_err(dev, "clk prepare enable failed\n");
-//		goto error_pwdn;
-//	}
-printk("aaaaaaaaaaaaaaaaaaa44444 \n ");
+
 	ret = ov5647_write_array(&sensor->sd, sensor_oe_enable_regs,
 				 ARRAY_SIZE(sensor_oe_enable_regs));
 	if (ret < 0) {
 		dev_err(dev, "write sensor_oe_enable_regs error\n");
 		goto error_clk_disable;
 	}
-printk("aaaaaaaaaaaaaaaaaaa555555555 \n ");
-	/* Stream off to coax lanes into LP-11 state. */
+
 	ret = ov5647_stream_off(&sensor->sd);
 	if (ret < 0) {
 		dev_err(dev, "camera not available, check power\n");
 		goto error_clk_disable;
 	}
-printk("aaaaaaaaaaaaaaaaaaa666666 \n ");
+
 	return 0;
 
 error_clk_disable:
@@ -870,8 +842,6 @@ static int ov5647_s_stream(struct v4l2_subdev *sd, int enable)
 	struct ov5647 *sensor = to_sensor(sd);
 	int ret;
 
-	printk("ov5647_s_stream 1\n");
-
 	mutex_lock(&sensor->lock);
 	if (sensor->streaming == enable) {
 		mutex_unlock(&sensor->lock);
@@ -879,22 +849,16 @@ static int ov5647_s_stream(struct v4l2_subdev *sd, int enable)
 	}
 
 	if (enable) {
-		//ret = pm_runtime_resume_and_get(&client->dev);
 		if (ret < 0)
 			goto error_unlock;
 
 		ret = ov5647_stream_on(sd);
-//		if (ret < 0) {
-//			dev_err(&client->dev, "stream start failed: %d\n", ret);
-//			goto error_pm;
-//		}
 	} else {
 		ret = ov5647_stream_off(sd);
 		if (ret < 0) {
 			dev_err(&client->dev, "stream stop failed: %d\n", ret);
 			goto error_pm;
 		}
-		//pm_runtime_put(&client->dev);
 	}
 
 	sensor->streaming = enable;
@@ -903,7 +867,6 @@ static int ov5647_s_stream(struct v4l2_subdev *sd, int enable)
 	return 0;
 
 error_pm:
-	//pm_runtime_put(&client->dev);
 error_unlock:
 	mutex_unlock(&sensor->lock);
 
@@ -1237,10 +1200,6 @@ static int ov5647_s_ctrl(struct v4l2_ctrl *ctrl)
 	struct i2c_client *client = v4l2_get_subdevdata(sd);
 	int ret = 0;
 
-	printk("ov5647_s_ctrl 1\n");
-
-	/* v4l2_ctrl_lock() locks our own mutex */
-
 	if (ctrl->id == V4L2_CID_VBLANK) {
 		int exposure_max, exposure_def;
 
@@ -1253,13 +1212,6 @@ static int ov5647_s_ctrl(struct v4l2_ctrl *ctrl)
 					 exposure_def);
 	}
 
-	/*
-	 * If the device is not powered up do not apply any controls
-	 * to H/W at this time. Instead the controls will be restored
-	 * at s_stream(1) time.
-	 */
-	//if (pm_runtime_get_if_in_use(&client->dev) == 0)
-	//	return 0;
 
 	switch (ctrl->id) {
 	case V4L2_CID_AUTO_WHITE_BALANCE:
@@ -1329,8 +1281,6 @@ static int ov5647_init_controls(struct ov5647 *sensor, struct device *dev)
 	struct i2c_client *client = v4l2_get_subdevdata(&sensor->sd);
 	int hblank, exposure_max, exposure_def;
 	struct v4l2_fwnode_device_properties props;
-
-	printk("ov5647_init_controls 1 \n");
 
 	v4l2_ctrl_handler_init(&sensor->ctrls, 8);
 
@@ -1441,7 +1391,7 @@ static int ov5647_probe(struct i2c_client *client)
 	struct v4l2_subdev *sd;
 	u32 xclk_freq;
 	int ret;
-	printk("ov5647  111111\n");
+
 	sensor = devm_kzalloc(dev, sizeof(*sensor), GFP_KERNEL);
 	if (!sensor)
 		return -ENOMEM;
@@ -1453,34 +1403,12 @@ static int ov5647_probe(struct i2c_client *client)
 			return ret;
 		}
 	}
-	printk("ov5647  22222222  22222\n");
-	sensor->xclk = devm_clk_get(dev, NULL);
-        printk("ov5647  22222222  33333333\n");
-//	if (IS_ERR(sensor->xclk)) {
-//		dev_err(dev, "could not get xclk");
-//		return PTR_ERR(sensor->xclk);
-//	}
 
-	printk("ov5647  22222222  44444444\n");
-	//xclk_freq = clk_get_rate(sensor->xclk);
-//	if (xclk_freq != 25000000) {
-//		dev_err(dev, "Unsupported clock frequency: %u\n", xclk_freq);
-//		return -EINVAL;
-//	}
-	printk("ov5647  33333333\n");
+	sensor->xclk = devm_clk_get(dev, NULL);
+
 	/* Request the power down GPIO asserted. */
 	sensor->pwdn = devm_gpiod_get_optional(dev, "pwdn", GPIOD_OUT_HIGH);
-//	if (IS_ERR(sensor->pwdn)) {
-//		dev_err(dev, "Failed to get 'pwdn' gpio\n");
-//		return -EINVAL;
-//	}
-
 	ret = ov5647_configure_regulators(dev, sensor);
-//	if (ret) {
-//		dev_err(dev, "Failed to get power regulators\n");
-//		return ret;
-//	}
-	printk("ov5647  4444444\n");
 	mutex_init(&sensor->lock);
 
 	sensor->mode = OV5647_DEFAULT_MODE;
@@ -1488,7 +1416,6 @@ static int ov5647_probe(struct i2c_client *client)
 	ret = ov5647_init_controls(sensor, dev);
 	if (ret)
 		goto mutex_destroy;
-	printk("ov5647  555555\n");
 	sd = &sensor->sd;
 	v4l2_i2c_subdev_init(sd, client, &ov5647_subdev_ops);
 	sd->internal_ops = &ov5647_subdev_internal_ops;
@@ -1499,30 +1426,12 @@ static int ov5647_probe(struct i2c_client *client)
 	ret = media_entity_pads_init(&sd->entity, 1, &sensor->pad);
 	if (ret < 0)
 		goto ctrl_handler_free;
-	printk("ov5647  666666\n");
 	ret = ov5647_power_on(dev);
-//	if (ret)
-//		goto entity_cleanup;
-
-	printk("ov5647  77777777 22\n");
-//	ret = ov5647_detect(sd);
-//	if (ret < 0)
-//		goto power_off;
 
 	ret = v4l2_async_register_subdev_sensor(sd);
-//	if (ret < 0)
-//		goto power_off;
 
-	printk("ov5647  88888888 000\n");
-	/* Enable runtime PM and turn off the device */
-//	pm_runtime_set_active(dev);
-	printk("ov5647  88888888 222\n");
-//	pm_runtime_enable(dev);
-	printk("ov5647  88888888 333\n");
-//	pm_runtime_idle(dev);
-	printk("ov5647  88888888 444\n");
-	dev_dbg(dev, "OmniVision OV5647 camera driver probed\n");
 
+	printk("custom driver ov5647 \n");
 	return 0;
 
 power_off:
