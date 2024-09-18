@@ -7,4 +7,6 @@
 8. Запустите на rpi : sudo rpi-source так вы получите исходники ядра в tar.gz архиве. Скопируйте исходники ядра себе на хост и распакуйте.
 9. Запустите на хосте: make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- bcm2711_defconfig 
 10. Запустите на хосте: make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- Image modules dtbs
-11. Скачайте файл 
+11. Скачайте файл https://github.com/sayapinpavel/rpi/blob/main/ov5647.c и поместите его в директорию drivers/media/i2c/
+12. Запустите повторно make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- Image modules dtbs
+13. Скачайте файл
