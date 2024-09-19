@@ -508,11 +508,11 @@ static const struct ov5647_mode ov5647_modes[] = {
 	/* 1080p30 10-bit mode. Full resolution centre-cropped down to 1080p. */
 	{
 		.format = {
-			.code		= MEDIA_BUS_FMT_Y8_1X8, //MEDIA_BUS_FMT_UYVY8_2X8, MEDIA_BUS_FMT_SRGGB10_1X10 //MEDIA_BUS_FMT_Y8_1X8
+			.code		= MEDIA_BUS_FMT_VYUY8_2X8, //MEDIA_BUS_FMT_UYVY8_2X8, MEDIA_BUS_FMT_SRGGB10_1X10 //MEDIA_BUS_FMT_Y8_1X8
 			.colorspace	= V4L2_COLORSPACE_RAW,
 			.field		= V4L2_FIELD_NONE,
-			.width		= 640,
-			.height		= 480
+			.width		= 1920,
+			.height		= 1080
 		},
 		.crop = {
 			.left		= 348 + OV5647_PIXEL_ARRAY_LEFT,
@@ -887,10 +887,10 @@ static u32 ov5647_get_mbus_code(struct v4l2_subdev *sd)
 	int index =  sensor->hflip->val | (sensor->vflip->val << 1);
 
 	static const u32 codes[4] = {
-		MEDIA_BUS_FMT_Y8_1X8,
-		MEDIA_BUS_FMT_Y8_1X8,
-		MEDIA_BUS_FMT_Y8_1X8,
-		MEDIA_BUS_FMT_Y8_1X8
+		MEDIA_BUS_FMT_VYUY8_2X8,
+		MEDIA_BUS_FMT_VYUY8_2X8,
+		MEDIA_BUS_FMT_VYUY8_2X8,
+		MEDIA_BUS_FMT_VYUY8_2X8
 	};
 
 	return codes[0];
