@@ -16,11 +16,18 @@
 17. Чтобы получить картинку запустите скрипт: ./get_img.sh
 18. Запуск скриптов для приема/передачи видео потока:
     1. На обеих системах (rpi и клиентском компьютере) установите GStreamer:
-    ```bash sudo apt update; sudo apt install -y gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly```
-    2. Скопируйте файл start_stream.sh на ваш Raspberry Pi
-    3. Запустите скрипт с указанием ширины, высоты, IP-адреса клиентского компьютера  и порта, пример:
-	```bash ./start_stream.sh 1920 1080 192.168.88.249 5000 ```
-    4. Скрипт начнет передавать видеопоток через UDP на указанный IP-адрес и порт
-    5. Скопируйте файл receive_stream.sh на клиентский компьютер (Linux). Запустите скрипт с указанием порта, например:
-	```bash ./receive_stream.sh 5000 ```
-    6. Скрипт начнет прием видеопотока через указанный UDP-порт и выведет его на экран.
+    ```
+    sudo apt update;
+    sudo apt install -y gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly
+    ```
+    3. Скопируйте файл start_stream.sh на ваш Raspberry Pi
+    4. Запустите скрипт с указанием ширины, высоты, IP-адреса клиентского компьютера  и порта, пример:
+    ```
+ 	./start_stream.sh 1920 1080 192.168.88.249 5000
+    ```
+    5. Скрипт начнет передавать видеопоток через UDP на указанный IP-адрес и порт
+    6. Скопируйте файл receive_stream.sh на клиентский компьютер (Linux). Запустите скрипт с указанием порта, например:
+	```
+ 	./receive_stream.sh 5000
+ 	```
+    7. Скрипт начнет прием видеопотока через указанный UDP-порт и выведет его на экран.
