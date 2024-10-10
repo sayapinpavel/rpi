@@ -13,4 +13,14 @@
 14. Скачайте скрипт https://github.com/sayapinpavel/rpi/blob/main/get_img.sh и подожите его на rpi в домашнию директорию. Сделайте скрипт исполняемым: chmod +x get_img.sh
 15. Скачайте файл https://github.com/sayapinpavel/rpi/blob/main/config.txt и положите его на rpi в директорию /boot/firmware/  После чего перезагрузите rpi
 16. Проинициализируйте драйвер который вы скинули на rpi: sudo insmod ov5647.ko; После чего выполните команду dmesg | grep custom; Если драйвер проинициализировался нормально, вы увидете custom driver ov5647 
-17. Чтобы получить картинку запустите скрипт: ./get_img.sh   
+17. Чтобы получить картинку запустите скрипт: ./get_img.sh
+18. Запуск скриптов для приема/передачи видео потока:
+    1. На обеих системах (rpi и клиентском компьютере) установите GStreamer:
+    ```bash sudo apt update; sudo apt install -y gstreamer1.0-tools gstreamer1.0-plugins-base gstreamer1.0-plugins-good gstreamer1.0-plugins-bad gstreamer1.0-plugins-ugly```
+    2. Скопируйте файл start_stream.sh на ваш Raspberry Pi
+    3. Запустите скрипт с указанием ширины, высоты, IP-адреса клиентского компьютера  и порта, пример:
+	```bash ./start_stream.sh 1920 1080 192.168.88.249 5000 ```
+    4. Скрипт начнет передавать видеопоток через UDP на указанный IP-адрес и порт
+    5. Скопируйте файл receive_stream.sh на клиентский компьютер (Linux). Запустите скрипт с указанием порта, например:
+	```bash ./receive_stream.sh 5000 ```
+    6. Скрипт начнет прием видеопотока через указанный UDP-порт и выведет его на экран.
