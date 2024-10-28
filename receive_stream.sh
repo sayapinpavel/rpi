@@ -25,4 +25,4 @@ fi
 PORT=$1
 
 # Запуск GStreamer для приема потока
-gst-launch-1.0 udpsrc port=${PORT} ! queue silent=false ! h264parse ! queue silent=false ! avdec_h264 ! videoconvert ! fpsdisplaysink video-sink=autovideosink text-overlay=true sync=false
+gst-launch-1.0 udpsrc port=${PORT} ! application/x-rtp, payload=26 ! rtpjpegdepay ! jpegdec ! videoconvert ! fpsdisplaysink video-sink=autovideosink text-overlay=true sync=false
