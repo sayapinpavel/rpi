@@ -31,4 +31,4 @@ IP_ADDRESS=$3
 PORT=$4
 
 # Запуск GStreamer с параметрами
-gst-launch-1.0 v4l2src device=/dev/video0 ! queue ! video/x-raw,width=${WIDTH},height=${HEIGHT},framerate=30/1 ! videoconvert ! queue ! jpegenc ! queue ! rtpjpegpay ! queue ! udpsink host=${IP_ADDRESS} port=${PORT}
+gst-launch-1.0 v4l2src device=/dev/video0 ! queue ! video/x-raw,width=${WIDTH},height=${HEIGHT},format=UYVY,framerate=30/1 ! videoconvert ! queue ! jpegenc ! queue ! rtpjpegpay ! queue ! udpsink host=${IP_ADDRESS} port=${PORT}
