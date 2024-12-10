@@ -47,12 +47,12 @@ output_file="$raw_dir/frame.raw"
 ls /dev/media? | while read file; do 
     media-ctl -v -d $file -p | grep ov5647 1> /dev/null
     if [ "$?" -eq "0" ]; then 
-        media-ctl -v -d $file -V ''\''ov5647 10-0036'\'':0 [fmt:VYUY8_2X8/1920x1080]'
+        media-ctl -v -d $file -V ''\''ov5647 10-0036'\'':0 [fmt:Y8_1X8/1920x1080]'
     fi
 done
 
 # Захват кадров и сохранение их в файл frame.raw
-v4l2-ctl --device /dev/video0 --set-fmt-video=width=${width},height=${height},pixelformat=VYUY
+v4l2-ctl --device /dev/video0 --set-fmt-video=width=${width},height=${height},pixelformat=GREY
 v4l2-ctl --device /dev/video0 --stream-mmap --stream-to=${output_file} --stream-count=${stream_count}
 
 # Вычисление размера кадра
