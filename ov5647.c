@@ -503,7 +503,6 @@ static struct regval_list ov5647_640x480_10bpp[] = {
 	{0x3503, 0x03},
 	{0x0100, 0x01},
 };
-
 static const struct ov5647_mode ov5647_modes[] = {
 	/* 1080p30 10-bit mode. Full resolution centre-cropped down to 1080p. */
 	{
@@ -526,8 +525,51 @@ static const struct ov5647_mode ov5647_modes[] = {
 		.reg_list	= ov5647_1080p30_10bpp,
 		.num_regs	= ARRAY_SIZE(ov5647_1080p30_10bpp)
 	},
+	{
+		.format = {
+			.code		= MEDIA_BUS_FMT_Y8_1X8, //MEDIA_BUS_FMT_UYVY8_2X8, MEDIA_BUS_FMT_SRGGB10_1X10 //MEDIA_BUS_FMT_Y8_1X8
+			.colorspace	= V4L2_COLORSPACE_RAW,
+			.field		= V4L2_FIELD_NONE,
+			.width		= 1920,
+			.height		= 1080
+		},
+		.crop = {
+			.left		= 348 + OV5647_PIXEL_ARRAY_LEFT,
+			.top		= 434 + OV5647_PIXEL_ARRAY_TOP,
+			.width		= 1928,
+			.height		= 1080,
+		},
+		.pixel_rate	= 81666700,
+		.hts		= 2416,
+		.vts		= 0x450,
+		.reg_list	= ov5647_1080p30_10bpp,
+		.num_regs	= ARRAY_SIZE(ov5647_1080p30_10bpp)
+	},
+	{
+		.format = {
+			.code		= MEDIA_BUS_FMT_VYUY8_2X8, //MEDIA_BUS_FMT_UYVY8_2X8, MEDIA_BUS_FMT_SRGGB10_1X10 //MEDIA_BUS_FMT_Y8_1X8
+			.colorspace	= V4L2_COLORSPACE_RAW,
+			.field		= V4L2_FIELD_NONE,
+			.width		= 640,
+			.height		= 480
+		},
+		.crop = {
+			.left		= 348 + OV5647_PIXEL_ARRAY_LEFT,
+			.top		= 434 + OV5647_PIXEL_ARRAY_TOP,
+			.width		= 1928,
+			.height		= 1080,
+		},
+		.pixel_rate	= 81666700,
+		.hts		= 2416,
+		.vts		= 0x450,
+		.reg_list	= ov5647_1080p30_10bpp,
+		.num_regs	= ARRAY_SIZE(ov5647_1080p30_10bpp)
+	},
 	/* 2x2 binned full FOV 10-bit mode. */
 };
+
+
+u32 resolution = 0;
 
 /* Default sensor mode is 2x2 binned 640x480 SBGGR10_1X10. */
 #define OV5647_DEFAULT_MODE	(&ov5647_modes[0])
@@ -1060,29 +1102,14 @@ static int ov5647_detect(struct v4l2_subdev *sd)
 	u8 read;
 	int ret;
 
-	ret = ov5647_write(sd, OV5647_SW_RESET, 0x01);
-	if (ret < 0)
-		return ret;
-
-	ret = ov5647_read(sd, OV5647_REG_CHIPID_H, &read);
-	if (ret < 0)
-		return ret;
-
-	if (read != 0x56) {
-		dev_err(&client->dev, "ID High expected 0x56 got %x", read);
-		return -ENODEV;
+	ret = ov5647_write(sd, 0x42, 0x00);
+	if (ret < 0){
+	    printk("i2c is not working");
+	    return ret;
 	}
 
-	ret = ov5647_read(sd, OV5647_REG_CHIPID_L, &read);
-	if (ret < 0)
-		return ret;
-
-	if (read != 0x47) {
-		dev_err(&client->dev, "ID Low expected 0x47 got %x", read);
-		return -ENODEV;
-	}
-
-	return ov5647_write(sd, OV5647_SW_RESET, 0x00);
+	printk("i2c is working");
+	return 0;
 }
 
 static int ov5647_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
@@ -1096,7 +1123,7 @@ static int ov5647_open(struct v4l2_subdev *sd, struct v4l2_subdev_fh *fh)
 	crop->width = OV5647_PIXEL_ARRAY_WIDTH;
 	crop->height = OV5647_PIXEL_ARRAY_HEIGHT;
 
-	*format = OV5647_DEFAULT_FORMAT;
+	*format = ov5647_modes[resolution].format;
 
 	return 0;
 }
@@ -1392,6 +1419,14 @@ static int ov5647_probe(struct i2c_client *client)
 	u32 xclk_freq;
 	int ret;
 
+	if (of_property_read_u32(np, "resolution", &resolution)) {
+	    resolution = 0;
+	} else {
+	    printk("read resolution = %d \n", resolution);
+	    if (resolution >= ARRAY_SIZE(ov5647_modes) || resolution < 0)
+		resolution = 0;
+	}
+
 	sensor = devm_kzalloc(dev, sizeof(*sensor), GFP_KERNEL);
 	if (!sensor)
 		return -ENOMEM;
@@ -1403,15 +1438,13 @@ static int ov5647_probe(struct i2c_client *client)
 			return ret;
 		}
 	}
-
 	sensor->xclk = devm_clk_get(dev, NULL);
 
 	/* Request the power down GPIO asserted. */
 	sensor->pwdn = devm_gpiod_get_optional(dev, "pwdn", GPIOD_OUT_HIGH);
-	ret = ov5647_configure_regulators(dev, sensor);
+	//ret = ov5647_configure_regulators(dev, sensor);
 	mutex_init(&sensor->lock);
-
-	sensor->mode = OV5647_DEFAULT_MODE;
+	sensor->mode = &ov5647_modes[resolution];
 
 	ret = ov5647_init_controls(sensor, dev);
 	if (ret)
@@ -1420,17 +1453,15 @@ static int ov5647_probe(struct i2c_client *client)
 	v4l2_i2c_subdev_init(sd, client, &ov5647_subdev_ops);
 	sd->internal_ops = &ov5647_subdev_internal_ops;
 	sd->flags |= V4L2_SUBDEV_FL_HAS_DEVNODE | V4L2_SUBDEV_FL_HAS_EVENTS;
-
 	sensor->pad.flags = MEDIA_PAD_FL_SOURCE;
 	sd->entity.function = MEDIA_ENT_F_CAM_SENSOR;
 	ret = media_entity_pads_init(&sd->entity, 1, &sensor->pad);
 	if (ret < 0)
 		goto ctrl_handler_free;
-	ret = ov5647_power_on(dev);
-
-	ret = v4l2_async_register_subdev_sensor(sd);
-
-
+	//ret = ov5647_power_on(dev);
+	//ret = v4l2_async_register_subdev_sensor(sd);
+	ov5647_detect(sd);
+	ret = v4l2_async_register_subdev(sd);
 	printk("custom driver ov5647 \n");
 	return 0;
 
@@ -1448,9 +1479,9 @@ mutex_destroy:
 
 static void ov5647_remove(struct i2c_client *client)
 {
+	printk("custom remove ov5647 \n");
 	struct v4l2_subdev *sd = i2c_get_clientdata(client);
 	struct ov5647 *sensor = to_sensor(sd);
-
 	v4l2_async_unregister_subdev(&sensor->sd);
 	media_entity_cleanup(&sensor->sd.entity);
 	v4l2_ctrl_handler_free(&sensor->ctrls);

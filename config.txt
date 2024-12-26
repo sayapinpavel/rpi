@@ -68,7 +68,7 @@ arm_64bit=1
 # Disable compensation for displays with overscan
 disable_overscan=1
 
-dtoverlay=ov5647
+#dtoverlay=ov5647
 
 [cm4]
 # Enable host mode on the 2711 built-in XHCI USB controller.

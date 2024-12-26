@@ -8,13 +8,20 @@
 9. Запустите на rpi : sudo rpi-source так вы получите исходники ядра в tar.gz архиве. При запуске утилиты rpi-source на первом этапе скачивается ядро, затем оно начинат собираться, вы можете дождаться завершения сборки ядра на rpi, а можете остановить сборку нажав CTRL-C, скопировать исходники ядра себе на хост, распаковать и продолжить сборку ядра у себя на хосте.
 10. Для сборки ядра на хосте запустите команду из корня ядра: make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- bcm2711_defconfig; затем команду: make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- Image modules dtbs
 11. Скачайте файл https://github.com/sayapinpavel/rpi/blob/main/ov5647.c и поместите его в директорию drivers/media/i2c/
-12. Запустите повторно make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- Image modules dtbs; В директории drivers/media/i2c/ у вас появится модуль ядра ov5647.ko переместите его в домашнию директорию на rpi
-13. Удалите драйвер на rpi: sudo rm /usr/lib/modules/6.6.51-v8+/kernel/drivers/media/i2c/ov5647.ko.xz
-14. Скачайте скрипт https://github.com/sayapinpavel/rpi/blob/main/get_img.sh и подожите его на rpi в домашнию директорию. Сделайте скрипт исполняемым: chmod +x get_img.sh
-15. Скачайте файл https://github.com/sayapinpavel/rpi/blob/main/config.txt и положите его на rpi в директорию /boot/firmware/  После чего перезагрузите rpi
-16. Проинициализируйте драйвер который вы скинули на rpi: sudo insmod ov5647.ko; После чего выполните команду dmesg | grep custom; Если драйвер проинициализировался нормально, вы увидете custom driver ov5647. Также вы можеть добавить драйвер в автозапуск, прописав в /etc/rc.local команду sudo insmod /full_path/ov5647.ko где full_path -полный путь до драйвера
-17. Чтобы получить картинку запустите скрипт: ./get_img.sh
-18. Запуск скриптов для приема/передачи видео потока:
+12. Скачайте файл https://github.com/sayapinpavel/rpi/blob/main/ov5647.dtsi и поместите его в директорию arch/arm/boot/dts/overlays
+13. Скачайте файл https://github.com/sayapinpavel/rpi/blob/main/ov5647-overlay.dts и поместите его в директорию arch/arm/boot/dts/overlays
+14. Запустите повторно make ARCH=arm64 CROSS_COMPILE=aarch64-linux-gnu- Image modules dtbs; 
+15. В директории drivers/media/i2c/ у вас появится модуль ядра ov5647.ko переместите его в директорию /usr/lib/modules/6.6.51-v8+/kernel/drivers/media/i2c/  на rpi
+16. В директории arch/arm/boot/dts/overlays/ у вас появится ov5647.dtbo переместите его в директорию /boot/firmware/overlays/ и в /boot/overlays/  на rpi
+17. Удалите драйвер на rpi: sudo rm /usr/lib/modules/6.6.51-v8+/kernel/drivers/media/i2c/ov5647.ko.xz
+19. Скачайте файл https://github.com/sayapinpavel/rpi/blob/main/config.txt и положите его на rpi в директорию /boot/firmware/  После чего перезагрузите rpi
+18. Скачайте скрипт https://github.com/sayapinpavel/rpi/blob/main/get_img.sh и подожите его на rpi в домашнию директорию. Сделайте скрипт исполняемым: chmod +x get_img.sh
+19. Скачайте скрипт https://github.com/sayapinpavel/rpi/blob/main/reset_driver.sh и положите его на rpi в домашнию директорию. Сделайте скрипт исполняемым: chmod +x reset_driver.sh
+18. Скачайте скрипт https://github.com/sayapinpavel/rpi/blob/main/conf.sh и положите его на rpi туда же где лежат скрипты get_img.sh, reset_driver.sh. Сделайте скрипт исполняемым: chmod +x conf.sh
+18. Задайте настройки камеры в conf.sh
+19. После каждого изменения параметров в conf.sh нужнон перезагружать драйвер при помощи запуска скрипта ./reset_driver.sh
+21. Чтобы получить картинку запустите скрипт: ./get_img.sh
+22. Запуск скриптов для приема/передачи видео потока:
     1. На обеих системах (rpi и клиентском компьютере) установите GStreamer:
     ```
     sudo apt update;
