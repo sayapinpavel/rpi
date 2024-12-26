@@ -14,14 +14,14 @@
 15. В директории drivers/media/i2c/ у вас появится модуль ядра ov5647.ko переместите его в директорию /usr/lib/modules/6.6.51-v8+/kernel/drivers/media/i2c/  на rpi
 16. В директории arch/arm/boot/dts/overlays/ у вас появится ov5647.dtbo переместите его в директорию /boot/firmware/overlays/ и в /boot/overlays/  на rpi
 17. Удалите драйвер на rpi: sudo rm /usr/lib/modules/6.6.51-v8+/kernel/drivers/media/i2c/ov5647.ko.xz
-19. Скачайте файл https://github.com/sayapinpavel/rpi/blob/main/config.txt и положите его на rpi в директорию /boot/firmware/  После чего перезагрузите rpi
-18. Скачайте скрипт https://github.com/sayapinpavel/rpi/blob/main/get_img.sh и подожите его на rpi в домашнию директорию. Сделайте скрипт исполняемым: chmod +x get_img.sh
-19. Скачайте скрипт https://github.com/sayapinpavel/rpi/blob/main/reset_driver.sh и положите его на rpi в домашнию директорию. Сделайте скрипт исполняемым: chmod +x reset_driver.sh
-18. Скачайте скрипт https://github.com/sayapinpavel/rpi/blob/main/conf.sh и положите его на rpi туда же где лежат скрипты get_img.sh, reset_driver.sh. Сделайте скрипт исполняемым: chmod +x conf.sh
-18. Задайте настройки камеры в conf.sh
-19. После каждого изменения параметров в conf.sh нужнон перезагружать драйвер при помощи запуска скрипта ./reset_driver.sh
-21. Чтобы получить картинку запустите скрипт: ./get_img.sh
-22. Запуск скриптов для приема/передачи видео потока:
+18. Скачайте файл https://github.com/sayapinpavel/rpi/blob/main/config.txt и положите его на rpi в директорию /boot/firmware/  После чего перезагрузите rpi
+19. Скачайте скрипт https://github.com/sayapinpavel/rpi/blob/main/get_img.sh и подожите его на rpi в домашнию директорию. Сделайте скрипт исполняемым: chmod +x get_img.sh
+20. Скачайте скрипт https://github.com/sayapinpavel/rpi/blob/main/reset_driver.sh и положите его на rpi в домашнию директорию. Сделайте скрипт исполняемым: chmod +x reset_driver.sh
+21. Скачайте скрипт https://github.com/sayapinpavel/rpi/blob/main/conf.sh и положите его на rpi туда же где лежат скрипты get_img.sh, reset_driver.sh. Сделайте скрипт исполняемым: chmod +x conf.sh
+22. Задайте настройки камеры в conf.sh
+23. После каждого изменения параметров в conf.sh нужнон перезагружать драйвер при помощи запуска скрипта ./reset_driver.sh
+24. Чтобы получить картинку запустите скрипт: ./get_img.sh
+25. Запуск скриптов для приема/передачи видео потока:
     1. На обеих системах (rpi и клиентском компьютере) установите GStreamer:
     ```
     sudo apt update;
