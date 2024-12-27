@@ -928,14 +928,13 @@ static u32 ov5647_get_mbus_code(struct v4l2_subdev *sd)
 	/* The control values are only 0 or 1. */
 	int index =  sensor->hflip->val | (sensor->vflip->val << 1);
 
-	static const u32 codes[4] = {
+	static const u32 codes[3] = {
 		MEDIA_BUS_FMT_VYUY8_2X8,
-		MEDIA_BUS_FMT_VYUY8_2X8,
-		MEDIA_BUS_FMT_VYUY8_2X8,
+		MEDIA_BUS_FMT_Y8_1X8,
 		MEDIA_BUS_FMT_VYUY8_2X8
 	};
 
-	return codes[0];
+	return codes[resolution];
 }
 
 static int ov5647_enum_mbus_code(struct v4l2_subdev *sd,

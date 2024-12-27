@@ -46,7 +46,7 @@ split -b $frame_size  "$output_file" "$binary_dir/output_frame_"
 i=1
 for frame in "$binary_dir"/output_frame_*; do
   mv $frame ${frame}.raw
-  ffmpeg -s "${WIDTH}x${HEIGHT}" -pix_fmt uyvy422 -i "${frame}.raw" -frames:v 1 "$png_dir/frame_$i.png" 1> /dev/null 2> /dev/null
+  ffmpeg -s "${WIDTH}x${HEIGHT}" -pix_fmt $FFMPEG_FMT -i "${frame}.raw" -frames:v 1 "$png_dir/frame_$i.png" 1> /dev/null 2> /dev/null
   i=$((i+1))
 done
 
