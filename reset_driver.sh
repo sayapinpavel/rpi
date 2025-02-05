@@ -13,7 +13,11 @@ then
 elif [[ $COLOR_FORMAT == "VYUY8_2X8" ]] && [[ $WIDTH -eq 640 ]] && [[ $HEIGHT -eq 480 ]]
 then
   ret=2
+elif [[ $COLOR_FORMAT == "Y8_1X8" ]] && [[ $WIDTH -eq 640 ]] && [[ $HEIGHT -eq 512 ]]
+then
+  ret=3
 fi
+
 
 sudo dtoverlay -r  ov5647
 sudo dtoverlay ov5647,address=0x$BUS,resolution=$ret
