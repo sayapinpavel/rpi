@@ -12,6 +12,8 @@ cam_node: ov5647@0 {
 	rotation = <0>;
 	orientation = <2>;
 
+	resolution = <0>;
+
 	port {
 		cam_endpoint: endpoint {
 			clock-lanes = <0>;

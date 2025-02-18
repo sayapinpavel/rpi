@@ -74,6 +74,7 @@
 		orientation = <&cam_node>,"orientation:0";
 		media-controller = <&csi>,"brcm,media-controller?";
 		address = <&cam_node>,"reg:0";
+		resolution = <&cam_node>,"resolution:0";
 		cam0 = <&i2c_frag>, "target:0=",<&i2c_csi_dsi0>,
 		       <&csi_frag>, "target:0=",<&csi0>,
 		       <&reg_frag>, "target:0=",<&cam0_reg>,
