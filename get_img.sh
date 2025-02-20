@@ -40,7 +40,7 @@ v4l2-ctl --device /dev/video0 --stream-mmap --stream-to=${output_file} --stream-
 frame_size=$(echo "$WIDTH * $HEIGHT * $BYTES_PER_PIXEL" | bc)
 
 # Разделение файла frame.raw на отдельные кадры
-split -b $frame_size  "$output_file" "$binary_dir/output_frame_"
+split -a 5 -b $frame_size -d "$output_file" "$binary_dir/output_frame_"
 
 # Конвертация всех кадров в PNG (для YUV422 используем формат VYUY)
 i=1
