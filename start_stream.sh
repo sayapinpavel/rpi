@@ -1,5 +1,7 @@
 #!/bin/bash
 
+. conf.sh
+
 # Функция для отображения справки
 show_help() {
     echo "Использование: $0 <ширина> <высота> <IP-адрес> <порт>"
@@ -18,17 +20,22 @@ show_help() {
 # Проверка на наличие флага --help или недостатка аргументов
 if [[ "$1" == "--help" ]]; then
     show_help
-elif [ "$#" -ne 4 ]; then
+elif [ "$#" -ne 2 ]; then
     echo "Ошибка: недостаточно аргументов."
     echo "Введите '$0 --help' для получения справки."
     exit 1
 fi
 
 # Присвоение аргументов переменным
-WIDTH=$1
-HEIGHT=$2
-IP_ADDRESS=$3
-PORT=$4
+IP_ADDRESS=$1
+PORT=$2
 
-# Запуск GStreamer с параметрами
-gst-launch-1.0 v4l2src device=/dev/video0 ! queue ! video/x-raw,width=${WIDTH},height=${HEIGHT},format=UYVY,framerate=30/1 ! videoconvert ! queue ! jpegenc ! queue ! rtpjpegpay ! queue ! udpsink host=${IP_ADDRESS} port=${PORT}
+
+if [[ "$GST_FORMAT" == "GRAY8" ]]; then
+    gst-launch-1.0 v4l2src device=/dev/video0 ! queue ! video/x-raw,width=${WIDTH},height=${HEIGHT},format=${GST_FORMAT},framerate=30/1 ! videoconvert ! video/x-raw,format=I420 ! queue ! jpegenc ! queue ! rtpjpegpay ! queue ! udpsink host=${IP_ADDRESS} port=${PORT}
+else
+    gst-launch-1.0 v4l2src device=/dev/video0 ! queue ! video/x-raw,width=${WIDTH},height=${HEIGHT},format=UYVY,framerate=30/1 ! videoconvert ! queue ! jpegenc ! queue ! rtpjpegpay ! queue ! udpsink host=${IP_ADDRESS} port=${PORT}
+fi
+
+#gst-launch-1.0 v4l2src device=/dev/video0 ! queue ! video/x-raw,width=${WIDTH},height=${HEIGHT},format=GRAY8,framerate=30/1 ! videoconvert ! queue ! jpegenc ! queue ! rtpjpegpay ! queue ! udpsink host=${IP_ADDRESS} port=${PORT}
+#gst-launch-1.0 v4l2src device=/dev/video0 ! queue ! video/x-raw,width=${WIDTH},height=${HEIGHT},format=${GST_FORMAT},framerate=30/1 ! videoconvert ! video/x-raw,format=I420 ! queue ! jpegenc ! queue ! rtpjpegpay ! queue ! udpsink host=${IP_ADDRESS} port=${PORT}
