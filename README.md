@@ -2,7 +2,7 @@
 2. Распакуйте: unxz 2024-07-04-raspios-bookworm-arm64-full.img.xz 
 3. Запишите на флешку: dd if=raspios_full_arm64-2024-07-04/2024-07-04-raspios-bookworm-arm64-full.img of=/dev/sd?
 4. Загрузитесь с флешки и настройте сеть для доступа в интернет.
-5. Запустите команду sudo rpi-update 
+5. Запустите команду sudo rpi-update b5e005290dc3abac0f969e7d66b72b11a092c269
 7. Скачайте утилиту rpi-source, запустив на rpi: sudo wget https://raw.githubusercontent.com/RPi-Distro/rpi-source/master/rpi-source -O /usr/local/bin/rpi-source && sudo chmod +x /usr/local/bin/rpi-source && /usr/local/bin/rpi-source -q --tag-update
 8. Установите на rpi следующие утилиты: sudo apt install git bc bison flex libssl-dev
 9. Запустите на rpi : sudo rpi-source так вы получите исходники ядра в tar.gz архиве. При запуске утилиты rpi-source на первом этапе скачивается ядро, затем оно начинат собираться, вы можете дождаться завершения сборки ядра на rpi, а можете остановить сборку нажав CTRL-C, скопировать исходники ядра себе на хост, распаковать и продолжить сборку ядра у себя на хосте.
